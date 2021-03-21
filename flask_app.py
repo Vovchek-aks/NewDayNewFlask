@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user
 import datetime as dt
 from forms.login import LoginForm
 from forms.register import RegisterForm
+from forms.job_add import AddJobForm
 from data.users import User
 
 app = Flask(__name__)
@@ -64,6 +65,22 @@ def reqister():
         db_sess.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
+
+
+@app.route('/add_job', methods=['GET', 'POST'])
+def add_job():
+    form = AddJobForm()
+    # if form.validate_on_submit():
+    #     db_sess = db_session.create_session()
+    #     user = db_sess.query(User).filter(User.email == form.email.data).first()
+    #     if user and user.check_password(form.password.data):
+    #         login_user(user, remember=form.remember_me.data)
+    #         return redirect("/")
+    #     return render_template('login.html',
+    #                            message="Неправильный логин или пароль",
+    #                            form=form)
+    return render_template('add_job.html', title='Да здравствует тов.Сталин!', form=form,
+                           form_items=[form.__dict__['_fields'][i] for i in list(form.__dict__['_fields'])[:-2]])
 
 
 @login_manager.user_loader
