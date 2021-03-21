@@ -105,6 +105,7 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
+
 def main():
     db_session.global_init("db/mars_explorer.db")
     app.run(debug=True)
