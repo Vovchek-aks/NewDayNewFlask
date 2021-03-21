@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {%  for user in users %}
+        <p>{{ user.name }}</p>
+        <p>{{ user.surname }}</p>
+    {% endfor %}
+
+{% endblock %}
