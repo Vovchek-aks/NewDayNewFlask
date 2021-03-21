@@ -5,8 +5,8 @@ from wtforms.validators import DataRequired
 
 
 class AddJobForm(FlaskForm):
-    politryk_id = IntegerField('id политрука', validators=[DataRequired()])
     name = StringField('Описание работы для профсоюза', validators=[DataRequired()])
+    politryk_id = IntegerField('id политрука', validators=[DataRequired()])
     plan = IntegerField('Объём плана', validators=[DataRequired()])
     ids_tovarishei = StringField('Бригада, выполняющая план', validators=[DataRequired()])
     start_of_piatiletka = StringField('Дата начала пятилетки', validators=[DataRequired()])

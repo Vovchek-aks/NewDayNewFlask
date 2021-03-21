@@ -1,6 +1,6 @@
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, request, abort
 from data import db_session
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import datetime as dt
 from forms.login import LoginForm
 from forms.register import RegisterForm
@@ -20,7 +20,9 @@ def index():
     db_sess = db_session.create_session()
     jobs = db_sess.query(Job).all()
 
-    return render_template('index.html', title='Домашняя страница', jobs=jobs)
+    return render_template('index.html', title='Домашняя страница', jobs=jobs,
+                           db_sess=db_sess,
+                           User=User)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -64,11 +66,13 @@ def register():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        return redirect('/login')
+        login_user(user, remember=form.remember_me.data)
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 
 @app.route('/add_job', methods=['GET', 'POST'])
+@login_required
 def add_job():
     form = AddJobForm()
     if form.validate_on_submit():
@@ -85,6 +89,7 @@ def add_job():
                                    message='Такого палитрука нет. Вы деверсант?')
         job = Job(
             politryk_id=form.politryk_id.data,
+            creater_id=current_user.id,
             name=form.name.data,
             plan=form.plan.data,
             ids_tovarishei=form.ids_tovarishei.data,
@@ -97,6 +102,60 @@ def add_job():
         return redirect('/')
     return render_template('add_job.html', title='Да здравствует тов.Сталин!', form=form,
                            form_items=[form.__dict__['_fields'][i] for i in list(form.__dict__['_fields'])[:-2]])
+
+
+@app.route('/edit_job/<job_id>', methods=['GET', 'POST'])
+@login_required
+def edit_job(job_id):
+    form = AddJobForm()
+
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        job = db_sess.query(Job).filter(Job.id == job_id).first()
+        print(123)
+        if job:
+            form.name.data = job.name
+            form.politryk_id.data = job.politryk_id
+            form.ids_tovarishei.data = job.ids_tovarishei
+            form.plan.data = job.plan
+            form.ids_tovarishei.data = job.ids_tovarishei
+            form.start_of_piatiletka.data = job.start_of_piatiletka
+            form.end_of_piatiletka.data = job.end_of_piatiletka
+            form.result_of_plan.data = job.result_of_plan
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        job = db_sess.query(Job).filter(Job.id == job_id).first()
+        if job:
+            job.name = form.name.data
+            job.politryk_id = form.politryk_id.data
+            job.ids_tovarishei = form.ids_tovarishei.data
+            job.plan = form.plan.data
+            job.ids_tovarishei = form.ids_tovarishei.data
+            job.start_of_piatiletka = form.start_of_piatiletka.data
+            job.end_of_piatiletka = form.end_of_piatiletka.data
+            job.result_of_plan = form.result_of_plan.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+
+    return render_template('add_job.html', title='Да здравствует тов.Сталин! снова...', form=form,
+                           form_items=[form.__dict__['_fields'][i] for i in list(form.__dict__['_fields'])[:-2]])
+
+
+@app.route('/job_delete/<int:job_id>', methods=['GET', 'POST'])
+@login_required
+def job_delete(job_id):
+    db_sess = db_session.create_session()
+    job = db_sess.query(Job).filter(Job.id == job_id).first()
+    if job:
+        db_sess.delete(job)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 @login_manager.user_loader

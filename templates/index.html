@@ -3,11 +3,21 @@
 {% block content %}
     <h1>Работы</h1>
     <p>----------------------------------------</p>
-    {%  for job in jobs %}
-        <p>Работа: {{ job.name }}</p>
-        <p>Дата сдачи: {{ job.end_of_piatiletka }}</p>
-        <p>Перевыполнели?: {{ job.result_of_plan }}</p>
-        <p>----------------------------------------</p>
-    {% endfor %}
+    {% if jobs %}
+        {%  for job in jobs %}
+            <p>Работа: {{ job.name }}</p>
+            <p>Политрук: {{ db_sess.query(User).filter(User.id == job.politryk_id).first().name }}</p>
+            <p>План утвердил: {{ db_sess.query(User).filter(User.id == job.creater_id).first().name }}</p>
+            <p>Дата сдачи: {{ job.end_of_piatiletka }}</p>
+            <p>Перевыполнели?: {{ job.result_of_plan }}</p>
+            {% if current_user.id in (job.creater_id, 1) %}
+                <a type="button" class="btn btn-secondary btn-sm" href="/edit_job/{{ job.id }}">Редактировать</a>
+                <a type="button" class="btn btn-danger btn-sm" href="/job_delete/{{ job.id }}">Удалить</a>
+            {% endif %}
+            <p>----------------------------------------</p>
+        {% endfor %}
+    {% else %}
+        <h3>Работ пока нет</h3>
+    {% endif %}
 
 {% endblock %}
