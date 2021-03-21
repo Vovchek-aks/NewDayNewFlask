@@ -12,10 +12,23 @@
 <body>
 <header>
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/">Наше приложение</a>
-        <a class="btn btn-primary" href="/register">Регистрация</a>
+        <a class="navbar-brand" href="/">☭Наше☭ приложение</a>
+
+        {% if current_user.is_authenticated %}
+
+            <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
+
+        {% else %}
+
+            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+              <a type="button" class="btn btn-success" href="/login">Войти</a>
+              <a type="button" class="btn btn-primary" href="/register">Зарегистрироваться</a>
+            </div>
+
+        {% endif %}
     </nav>
 </header>
+
 <!-- Begin page content -->
 <main role="main" class="container">
     {% block content %}{% endblock %}
