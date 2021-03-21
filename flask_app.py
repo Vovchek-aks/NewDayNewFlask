@@ -6,6 +6,7 @@ from forms.login import LoginForm
 from forms.register import RegisterForm
 from forms.job_add import AddJobForm
 from data.users import User
+from data.job import Job
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -17,9 +18,9 @@ login_manager.init_app(app)
 @app.route('/index')
 def index():
     db_sess = db_session.create_session()
-    users = db_sess.query(User).all()
+    jobs = db_sess.query(Job).all()
 
-    return render_template('index.html', title='Домашняя страница', users=users)
+    return render_template('index.html', title='Домашняя страница', jobs=jobs)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -70,15 +71,30 @@ def reqister():
 @app.route('/add_job', methods=['GET', 'POST'])
 def add_job():
     form = AddJobForm()
-    # if form.validate_on_submit():
-    #     db_sess = db_session.create_session()
-    #     user = db_sess.query(User).filter(User.email == form.email.data).first()
-    #     if user and user.check_password(form.password.data):
-    #         login_user(user, remember=form.remember_me.data)
-    #         return redirect("/")
-    #     return render_template('login.html',
-    #                            message="Неправильный логин или пароль",
-    #                            form=form)
+    if form.validate_on_submit():
+        if form.start_of_piatiletka.data == form.end_of_piatiletka.data:
+            return render_template('add_job.html', title='Да здравствует тов.Сталин!', form=form,
+                                   form_items=[form.__dict__['_fields'][i] for i in
+                                               list(form.__dict__['_fields'])[:-2]],
+                                   message='Дурак?')
+        db_sess = db_session.create_session()
+        if not db_sess.query(User).filter(User.id == form.politryk_id.data).first():
+            return render_template('add_job.html', title='Да здравствует тов.Сталин!', form=form,
+                                   form_items=[form.__dict__['_fields'][i] for i in
+                                               list(form.__dict__['_fields'])[:-2]],
+                                   message='Такого палитрука нет. Вы деверсант?')
+        job = Job(
+            politryk_id=form.politryk_id.data,
+            name=form.name.data,
+            plan=form.plan.data,
+            ids_tovarishei=form.ids_tovarishei.data,
+            start_of_piatiletka=form.start_of_piatiletka.data,
+            end_of_piatiletka=form.end_of_piatiletka.data,
+            result_of_plan=form.result_of_plan.data
+        )
+        db_sess.add(job)
+        db_sess.commit()
+        return redirect('/')
     return render_template('add_job.html', title='Да здравствует тов.Сталин!', form=form,
                            form_items=[form.__dict__['_fields'][i] for i in list(form.__dict__['_fields'])[:-2]])
 

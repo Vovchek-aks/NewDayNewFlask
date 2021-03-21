@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {%  for user in users %}
-        <p>{{ user.name }}</p>
-        <p>{{ user.surname }}</p>
+    <h1>Работы</h1>
+    <p>----------------------------------------</p>
+    {%  for job in jobs %}
+        <p>Работа: {{ job.name }}</p>
+        <p>Дата сдачи: {{ job.end_of_piatiletka }}</p>
+        <p>Перевыполнели?: {{ job.result_of_plan }}</p>
+        <p>----------------------------------------</p>
     {% endfor %}
 
 {% endblock %}
