@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, abort
-from data import db_session
+from data import db_session, get_jobs_api
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import datetime as dt
 from forms.login import LoginForm
@@ -173,6 +173,7 @@ def logout():
 
 def main():
     db_session.global_init("db/mars_explorer.db")
+    app.register_blueprint(get_jobs_api.blueprint)
     app.run(debug=True)
 
 
