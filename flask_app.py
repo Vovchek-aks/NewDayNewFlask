@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, abort
+from flask import Flask, redirect, render_template, request, abort, make_response, jsonify
 from data import db_session, get_jobs_api, get_one_job_api
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import datetime as dt
@@ -169,6 +169,11 @@ def load_user(user_id):
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 def main():
