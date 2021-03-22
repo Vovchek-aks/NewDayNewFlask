@@ -8,6 +8,7 @@
             <p>Работа: {{ job.name }}</p>
             <p>Политрук: {{ db_sess.query(User).filter(User.id == job.politryk_id).first().name }}</p>
             <p>План утвердил: {{ db_sess.query(User).filter(User.id == job.creater_id).first().name }}</p>
+            <p>На выполнение назначены: {{ job.ids_tovarishei }}</p>
             <p>Дата сдачи: {{ job.end_of_piatiletka }}</p>
             <p>Перевыполнели?: {{ job.result_of_plan }}</p>
             {% if current_user.id in (job.creater_id, 1) %}
