@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, abort, make_response, jsonify
-from data import db_session, get_jobs_api, get_one_job_api, del_job_api
+from data import db_session, get_jobs_api, get_one_job_api, del_job_api, create_job_api
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import datetime as dt
 from forms.login import LoginForm
@@ -178,9 +178,12 @@ def not_found(error):
 
 def main():
     db_session.global_init("db/mars_explorer.db")
+
     app.register_blueprint(get_jobs_api.blueprint)
     app.register_blueprint(get_one_job_api.blueprint)
     app.register_blueprint(del_job_api.blueprint)
+    app.register_blueprint(create_job_api.blueprint)
+
     app.run(debug=True)
 
 
